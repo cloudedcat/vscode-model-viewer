@@ -1,10 +1,17 @@
 import * as vscode from 'vscode';
 import { getNonce } from './util';
+import path = require('path');
+
+interface updateDelegate {
+	update(): Promise<void>;
+}
 
 class GLTFDocument implements vscode.CustomDocument {
 
 	private readonly _uri: vscode.Uri;
 	private _documentData: Uint8Array;
+	private _disposables: vscode.Disposable[];
+	private _update: () => void;
 
 	private constructor(
 		uri: vscode.Uri,
@@ -12,6 +19,31 @@ class GLTFDocument implements vscode.CustomDocument {
 	) {
 		this._uri = uri;
 		this._documentData = initialContent;
+		this._disposables = [];
+		this._update = () => {};
+
+		const fileWatcher = vscode.workspace.createFileSystemWatcher(
+			new vscode.RelativePattern(this._uri, '*')
+		  );
+		
+		fileWatcher.onDidChange(_e => {
+			GLTFDocument.readFile(this._uri).then(
+				value => {
+					this._documentData = value;
+					this._update();
+				}
+			);
+		});
+
+		this._disposables.push(fileWatcher);
+	}
+
+	public onChange(update: () => void) {
+		const curUpdate = this._update
+		this._update = () => {
+			curUpdate()
+			update()
+		}
 	}
 
 	get documentData() { return this._documentData; }
@@ -24,6 +56,7 @@ class GLTFDocument implements vscode.CustomDocument {
 		// If we have a backup, read that. Otherwise read the resource from the workspace
 		const dataFile = typeof backupId === 'string' ? vscode.Uri.parse(backupId) : uri;
 		const fileData = await GLTFDocument.readFile(dataFile);
+
 		return new GLTFDocument(uri, fileData);
 	}
 
@@ -35,12 +68,14 @@ class GLTFDocument implements vscode.CustomDocument {
 		return new Uint8Array(await vscode.workspace.fs.readFile(uri));
 	}
 
-	dispose() { };
+	dispose() {
+		this._disposables.forEach(d => {d.dispose()})
+	};
 }
 
 export class GLTFReadonlyProvider implements vscode.CustomReadonlyEditorProvider<GLTFDocument> {
 
-	private static readonly viewTypeModelViewer = 'modelViewer.gltf';
+	private static readonly viewTypeModelViewer = 'modelViewer.gltfPreview';
 
 	constructor(
 		private readonly _context: vscode.ExtensionContext
@@ -56,7 +91,7 @@ export class GLTFReadonlyProvider implements vscode.CustomReadonlyEditorProvider
 	async openCustomDocument(
 		uri: vscode.Uri,
 		openContext: vscode.CustomDocumentOpenContext,
-		token: vscode.CancellationToken): Promise<GLTFDocument> {
+		_token: vscode.CancellationToken): Promise<GLTFDocument> {
 
 		const document: GLTFDocument = await GLTFDocument.create(uri, openContext.backupId);
 
@@ -69,19 +104,24 @@ export class GLTFReadonlyProvider implements vscode.CustomReadonlyEditorProvider
 	resolveCustomEditor(
 		document: GLTFDocument,
 		webviewPanel: vscode.WebviewPanel,
-		token: vscode.CancellationToken): void {
+		_token: vscode.CancellationToken): void {
 
 		webviewPanel.webview.options = {
 			enableScripts: true,
+			localResourceRoots: [vscode.Uri.file(path.join(this._context.extensionPath, 'media'))],
 		};
+
+		const update = async () => {
+			webviewPanel.webview.postMessage({
+				type: "update",
+				body: document.documentData,
+			});
+		}
 
 		webviewPanel.webview.onDidReceiveMessage(e => {
 			if (e.type !== 'ready') { return; }
-
-			webviewPanel.webview.postMessage({
-				type: "init",
-				body: document.documentData,
-			});
+			update();
+			document.onChange(update);
 		});
 
 		webviewPanel.webview.html = this.getHtmlForWebview(webviewPanel.webview);

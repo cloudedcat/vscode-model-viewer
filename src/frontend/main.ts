@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
     window.addEventListener('message', async e => {
         const { type, body } = e.data;
         switch (type) {
-            case 'init':
+            case 'update':
                 {
                     loadModelFromData(body).then(modelpath => {
                         let modelViewer: ModelViewerElement = document.querySelector('#model-3d')!;

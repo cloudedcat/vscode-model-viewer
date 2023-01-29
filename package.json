@@ -9,9 +9,7 @@
   "categories": [
     "Visualization"
   ],
-  "activationEvents": [
-    "onCommand:gltf-viewer.helloWorld"
-  ],
+  "activationEvents": [],
   "keywords": [
     "gltf",
     "glb"
@@ -20,20 +18,16 @@
   "contributes": {
     "customEditors": [
       {
-        "viewType": "modelViewer.gltf",
+        "viewType": "modelViewer.gltfPreview",
         "displayName": "glTF",
         "selector": [
           {
-            "filenamePattern": "*.gltf"
-          },
-          {
-            "filenamePattern": "*.glb"
+            "filenamePattern": "*.{glb,gltf}"
           }
         ],
-        "priority": "default"
+        "priority": "option"
       }
-    ],
-    "commands": []
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run package",
