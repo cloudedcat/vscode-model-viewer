@@ -3,28 +3,23 @@
 This is the vscode extention for viewing glTF(glb) models.
 It is based on google's model-viewer https://github.com/google/model-viewer
 
-## How to
+## How to view gltf/glb
 
+1. Install extension
+2. Open glb file in editor
+3. Press Ctrl + Shift + P
+4. Pick `View: Reopen Editor With...`
+5. `Configure default editor for *.glb`
+6. `glFT`
+
+![image](doc/how_to_view.gif)
 
 ## Extension Settings
 
 There is no settings yet.
 
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+### v0.0.2
 
-### 1.0.0
-
-Initial release of vscode-model-viewer
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
+Initial release

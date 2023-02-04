@@ -1,11 +1,11 @@
 {
   "name": "vscode-model-viewer",
-  "displayName": "modelViewer",
+  "displayName": "Model viewer",
   "description": "model viewer",
   "publisher": "cloudedcat",
-  "logo": "logo.png",
+  "icon": "logo.png",
   "repository": "https://github.com/cloudedcat/vscode-model-viewer",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.74.0"
   },
