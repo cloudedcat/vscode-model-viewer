@@ -1,13 +1,23 @@
 {
   "name": "vscode-model-viewer",
-  "displayName": "Model viewer",
-  "description": "model viewer",
+  "displayName": "glTF Model Viewer",
+  "description": "Wrapper of google's model-viewer",
   "publisher": "cloudedcat",
+  "author": {
+		"name": "Maksim Fedorov",
+		"email": "cloudecat@gmail.com"
+	},
   "icon": "logo.png",
-  "repository": "https://github.com/cloudedcat/vscode-model-viewer",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.74.0"
+  },
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/cloudedcat/vscode-model-viewer"
+	},
+  "bugs": {
+    "url": "https://github.com/cloudedcat/vscode-model-viewer/issues"
   },
   "categories": [
     "Visualization"
